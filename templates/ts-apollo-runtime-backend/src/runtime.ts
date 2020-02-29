@@ -1,21 +1,11 @@
-import { makeExecutableSchema } from 'apollo-server-express';
-import { GraphbackRuntime, ModelDefinition, PgKnexDBDataProvider } from 'graphback'
-import { printSchema } from 'graphql';
+
+import { GraphbackRuntime, ModelDefinition, GraphbackGeneratorConfig } from 'graphback'
+import { createKnexPGCRUDRuntimeServices } from '@graphback/runtime-knex'
 import { migrateDB } from 'graphql-migrations';
 import { PubSub } from 'graphql-subscriptions';
-import * as Knex from 'knex';
-import { createDB, getConfig } from './db'
+import { createDB, getGraphbackConfig, getMigrateConfig } from './db'
 import { loadSchema } from './loadSchema';
-
-
-/**
- * Override default runtime db to use Postgress
- */
-class PGRuntime extends GraphbackRuntime {
-  protected createDBProvider(model: ModelDefinition, db: Knex) {
-    return new PgKnexDBDataProvider(model.graphqlType, db);
-  }
-}
+import { buildSchema } from 'graphql';
 
 /**
  * Method used to create runtime schema
@@ -23,17 +13,20 @@ class PGRuntime extends GraphbackRuntime {
  */
 export const createRuntime = async () => {
   const db = await createDB();
-  const graphbackConfig = await getConfig();
+  const graphbackConfig = await getGraphbackConfig();
+  const dbmigrationsConfig = await getMigrateConfig();
   const schemaText = loadSchema(graphbackConfig.model);
 
   // NOTE: For SQLite db should be always recreated
-  const ops = await migrateDB(graphbackConfig.dbmigrations, schemaText);
+  const ops = await migrateDB(dbmigrationsConfig, schemaText);
 
   console.log("Migrated database", ops);
 
   const pubSub = new PubSub();
-  const runtimeEngine = new PGRuntime(schemaText, graphbackConfig);
-  const runtime = runtimeEngine.buildRuntime(db, pubSub, {});
+  const runtimeEngine = new GraphbackRuntime(schemaText, graphbackConfig);
+  const models = runtimeEngine.getDataSourceModels();
+  const services = createKnexPGCRUDRuntimeServices(models, buildSchema(schemaText), db, pubSub);
+  const runtime = runtimeEngine.buildRuntime(services);
 
   return runtime;
 }

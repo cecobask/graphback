@@ -3,16 +3,12 @@ echo "Preparing release"
 
 set -e
 
-rm -Rf node_modules
-npm install
-npm run clean
-npm run bootstrap
-npm run build
-npm run test
+yarn	
+yarn build
 
 # don't run in CI
 if [ ! "$CI" = true ]; then
-  lerna publish --skip-git --force-publish=* --skip-npm
+  yarn lerna publish --skip-git --force-publish=* --skip-npm
 fi
 
 echo "Repository is ready for release."

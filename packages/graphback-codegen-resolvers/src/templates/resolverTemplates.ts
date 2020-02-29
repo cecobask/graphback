@@ -20,7 +20,7 @@ export const deleteTemplate = (modelName: string): string => {
 
 export const findAllTemplate = (modelName: string): string => {
   return `(parent, args, context) => {
-      return context.${modelName}.findAll();
+      return context.${modelName}.findAll(args);
     }`
 }
 

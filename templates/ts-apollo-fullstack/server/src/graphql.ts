@@ -1,10 +1,11 @@
 
+import { join } from 'path';
 import { loadSchemaFiles } from '@graphql-toolkit/file-loading';
 import { ApolloServer, PubSub } from 'apollo-server-express';
 import { buildSchema } from 'graphql';
-import { join } from 'path';
+import { createKnexPGCRUDRuntimeServices } from "@graphback/runtime-knex"
 import { createDB } from './db'
-import { createCRUDResolversRuntimeContext } from './resolvers/createContext';
+import { models } from './resolvers/models';
 import resolvers from './resolvers/resolvers'
 
 /**
@@ -16,7 +17,7 @@ export const createApolloServer = async () => {
 
     const typeDefs = loadSchemaFiles(join(__dirname, '/schema/')).join('\n')
     const schema = buildSchema(typeDefs);
-    const context = createCRUDResolversRuntimeContext({ schema, db, pubSub });
+    const context = createKnexPGCRUDRuntimeServices(models, schema, db, pubSub);
     const apolloServer = new ApolloServer({
         typeDefs: typeDefs,
         resolvers,
