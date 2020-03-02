@@ -1,6 +1,6 @@
 {
   "name": "@graphback/runtime-mongo",
-  "version": "0.11.0-rc3",
+  "version": "0.11.0-rc4",
   "description": "Graphback runtime mongodb",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
@@ -36,18 +36,18 @@
     "access": "public"
   },
   "devDependencies": {
-    "@types/node": "12.12.28",
+    "@types/node": "12.12.29",
     "ava": "2.4.0",
     "graphql": "14.6.0",
-    "mongodb-memory-server": "6.3.0",
+    "mongodb-memory-server": "6.3.1",
     "rimraf": "3.0.2",
     "ts-node": "8.6.2",
     "tsutils": "3.17.1",
-    "typescript": "3.8.2"
+    "typescript": "3.8.3"
   },
   "dependencies": {
-    "@graphback/core": "0.11.0-rc3",
-    "@graphback/runtime": "0.11.0-rc3",
+    "@graphback/core": "0.11.0-rc4",
+    "@graphback/runtime": "0.11.0-rc4",
     "@types/mongodb": "3.3.16",
     "dataloader": "2.0.0",
     "graphql-subscriptions": "1.1.0"
